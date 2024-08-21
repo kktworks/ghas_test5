@@ -6,8 +6,8 @@ on:
       - main
   pull_request:
   schedule:
-    - cron: '0 0 * * 0'
-  workflow_dispatch:
+    - cron: '0 0 * * 0' # 毎週日曜日の深夜に実行
+  workflow_dispatch: # 手動トリガーも可能にする
 
 jobs:
   dependency-scanning:
@@ -21,15 +21,12 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '11'
-        distribution: 'temurin' # distributionパラメータを追加
+        distribution: 'temurin' # 必要な distribution を指定
 
     - name: Install dependencies
       run: mvn install -DskipTests
 
     - name: Run dependency scanning
-      uses: github/codeql-action/init@v2
+      uses: github/dependency-review-action@v2
       with:
-        languages: java
-
-    - name: Perform CodeQL analysis
-      uses: github/codeql-action/analyze@v2
+        token: ${{ secrets.GITHUB_TOKEN }}
